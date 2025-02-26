@@ -29,6 +29,7 @@ pipeline {
             steps {
                 script {
                     echo 'Continuing the pipeline...'
+                    echo "proceeding to build and deploy"
                 }
             }
         }
@@ -40,7 +41,8 @@ pipeline {
             }
             steps {
                 script {
-                    error 'Pipeline aborted by the user'
+                    echo "oy lo"
+                    error 'Pipeline aborted by the us'
                 }
             }
         }
