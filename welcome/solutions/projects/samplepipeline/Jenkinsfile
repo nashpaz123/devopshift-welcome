@@ -68,7 +68,9 @@ pipeline {
         stage('archive log') {
             steps {
               sh """
-                 cp flask_app.log flask_app${env.BUILD_NUMBER}.log 
+                 ls
+                 pwd
+                 touch flask_app${env.BUILD_NUMBER}.log 
               """
               archiveArtifacts artifacts: "flask_app${env.BUILD_NUMBER}.log", allowEmptyArchive: true
             }
