@@ -99,7 +99,7 @@ pipeline {
                 
                 echo "Deployment of artifact pform previous stage approved for ${userInput.ENVIRONMENT}"
             }
-        }
+        } // end of stage
     } // end of pipeline
 
     post {
