@@ -31,12 +31,16 @@ pipeline {
                     def pythonVersions = env.PYTHON_VERSIONS_CSV.split(',')
                     for (version in pythonVersions) {
                         docker.image("python:${version}").inside {
-                            sh 'python app.py'
+                            // Make sure the working directory contains your files
+                            sh 'ls -la' // Debug: see what files are available
+                            sh 'pip install faker' // Install dependencies in this container
+                            sh 'python app.py' // Run the application
                         }
                     }
                 }
             }
         }
+
         stage('Build Docker Images') {
             steps {
                 script {
