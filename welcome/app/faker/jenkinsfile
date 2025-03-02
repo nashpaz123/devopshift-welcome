@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        PYTHON_VERSIONS = ['3.8', '3.9'] // Define Python versions for the matrix
         DOCKERHUB_CREDENTIALS = 'dockercreds' // DockerHub credentials ID
         REPO_NAME = 'nashpaz123/python-fake-data-app' // DockerHub repository name
         GITHUB_REPO = 'https://github.com/nashpaz123/devopshift-welcome.git' // Update with your GitHub repository URL
@@ -34,7 +33,7 @@ pipeline {
                 axes {
                     axis {
                         name 'PYTHON_VERSION'
-                        values PYTHON_VERSIONS // Use the matrix for different Python versions
+                        values '3.8', '3.9'
                     }
                 }
                 stages {
@@ -58,7 +57,7 @@ pipeline {
                 axes {
                     axis {
                         name 'PYTHON_VERSION'
-                        values PYTHON_VERSIONS // Use the matrix for different Python versions
+                        values '3.8', '3.9'
                     }
                 }
                 stages {
@@ -79,7 +78,7 @@ pipeline {
                 axes {
                     axis {
                         name 'PYTHON_VERSION'
-                        values PYTHON_VERSIONS // Use the matrix for different Python versions
+                        values '3.8', '3.9'
                     }
                 }
                 stages {
