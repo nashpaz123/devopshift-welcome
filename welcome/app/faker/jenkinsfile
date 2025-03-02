@@ -45,7 +45,10 @@ pipeline {
                             }
                         }
                         steps {
-                            sh 'python app.py' // Run the Python script to verify functionality
+                            sh """
+                               wget https://raw.githubusercontent.com/nashpaz123/devopshift-welcome/refs/heads/jenkins-workshop/welcome/app/faker/app.py
+                               python app.py
+                            """
                         }
                     }
                 }
