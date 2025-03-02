@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        PYTHON_VERSIONS = "3.8,3.9"
+        PYTHON_VERSIONS = ['3.8', '3.9'] // Define Python versions for the matrix
         DOCKERHUB_CREDENTIALS = 'dockercreds' // DockerHub credentials ID
         REPO_NAME = 'nashpaz123/python-fake-data-app' // DockerHub repository name
         GITHUB_REPO = 'https://github.com/nashpaz123/devopshift-welcome.git' // Update with your GitHub repository URL
@@ -20,17 +20,83 @@ pipeline {
         stage('Install Dependencies') {
             agent {
                 docker {
-                    image 'python:3.8' // Use any Python version for dependency installation
-                    args '-v $HOME/.cache/pip:/root/.cache/pip'
+                    image 'python:3.8' // Use a Python image for dependency installation
+                    args '-v $HOME/.cache/pip:/root/.cache/pip' // Caching pip dependencies to speed up builds
                 }
             }
             steps {
-                sh 'pip install faker'
+                sh 'pip install faker' // Install the required Python package
             }
         }
-}
 
+        stage('Test Application') {
+            matrix {
+                axes {
+                    axis {
+                        name 'PYTHON_VERSION'
+                        values PYTHON_VERSIONS // Use the matrix for different Python versions
+                    }
+                }
+                stages {
+                    stage('Run Test') {
+                        agent {
+                            docker {
+                                image "python:${PYTHON_VERSION}" // Use the Python version from the matrix
+                                reuseNode true // Reuse the same agent to prevent unnecessary overhead
+                            }
+                        }
+                        steps {
+                            sh 'python app.py' // Run the Python script to verify functionality
+                        }
+                    }
+                }
+            }
+        }
 
+        stage('Build Docker Images') {
+            matrix {
+                axes {
+                    axis {
+                        name 'PYTHON_VERSION'
+                        values PYTHON_VERSIONS // Use the matrix for different Python versions
+                    }
+                }
+                stages {
+                    stage('Build Image') {
+                        steps {
+                            script {
+                                // Build the Docker image dynamically based on the Python version
+                                docker.build("${REPO_NAME}:${PYTHON_VERSION}", "--build-arg PYTHON_VERSION=${PYTHON_VERSION} .")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Push to DockerHub') {
+            matrix {
+                axes {
+                    axis {
+                        name 'PYTHON_VERSION'
+                        values PYTHON_VERSIONS // Use the matrix for different Python versions
+                    }
+                }
+                stages {
+                    stage('Push Image') {
+                        steps {
+                            script {
+                                // Push the built image to DockerHub using DockerHub credentials
+                                docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
+                                    docker.image("${REPO_NAME}:${PYTHON_VERSION}").push() // Push each image
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     post {
         always {
