@@ -46,6 +46,7 @@ pipeline {
                         }
                         steps {
                             sh """
+                               pip install faker
                                wget https://raw.githubusercontent.com/nashpaz123/devopshift-welcome/refs/heads/jenkins-workshop/welcome/app/faker/app.py
                                python app.py
                             """
