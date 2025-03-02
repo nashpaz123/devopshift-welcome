@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        PYTHON_VERSIONS = ['3.8', '3.9'] // Define Python versions for the matrix
+        PYTHON_VERSIONS = '3.8', '3.9' // Define Python versions for the matrix
         DOCKERHUB_CREDENTIALS = 'dockerhub-credentials' // DockerHub credentials ID
         REPO_NAME = 'your-dockerhub-username/python-fake-data-app' // DockerHub repository name
         GITHUB_REPO = '???' // Update with your GitHub repository URL
