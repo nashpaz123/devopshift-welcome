@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        PYTHON_VERSIONS = "3.8"
+        PYTHON_VERSIONS = "3.8,3.9"
         DOCKERHUB_CREDENTIALS = 'dockercreds' // DockerHub credentials ID
         REPO_NAME = 'nashpaz123/python-fake-data-app' // DockerHub repository name
         GITHUB_REPO = 'https://github.com/nashpaz123/devopshift-welcome.git' // Update with your GitHub repository URL
