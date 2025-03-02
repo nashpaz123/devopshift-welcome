@@ -34,8 +34,7 @@ pipeline {
                 axes {
                     axis {
                         name 'PYTHON_VERSION'
-                        values PYTHON_VERSIONS // Reference the environment variable dynamically
-                    }
+                        values '3.8', '3.9'                    }
                 }
                 stages {
                     stage('Run Test') {
