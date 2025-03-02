@@ -1,0 +1,68 @@
+pipeline {
+    agent any
+    environment {
+        // Define as string that we'll parse later
+        PYTHON_VERSIONS_CSV = "3.8,3.9"
+        DOCKERHUB_CREDENTIALS = 'dockercreds' // DockerHub credentials ID
+        REPO_NAME = 'nashpaz123/python-fake-data-app' // DockerHub repository name
+        GITHUB_REPO = 'https://github.com/nashpaz123/devopshift-welcome.git' // Update with your GitHub repository URL
+        GITHUB_BRANCH = 'jenkins-workshop' // Update with your GitHub repository branch
+    }
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git branch: "${GITHUB_BRANCH}", url: "${GITHUB_REPO}"
+            }
+        }
+        stage('Install Dependencies') {
+            agent {
+                docker {
+                    image 'python:3.8'
+                    args '-v $HOME/.cache/pip:/root/.cache/pip'
+                }
+            }
+            steps {
+                sh 'pip install faker'
+            }
+        }
+        stage('Test Application') {
+            steps {
+                script {
+                    def pythonVersions = env.PYTHON_VERSIONS_CSV.split(',')
+                    for (version in pythonVersions) {
+                        docker.image("python:${version}").inside {
+                            sh 'python app.py'
+                        }
+                    }
+                }
+            }
+        }
+        stage('Build Docker Images') {
+            steps {
+                script {
+                    def pythonVersions = env.PYTHON_VERSIONS_CSV.split(',')
+                    for (version in pythonVersions) {
+                        docker.build("${REPO_NAME}:${version}", "--build-arg PYTHON_VERSION=${version} .")
+                    }
+                }
+            }
+        }
+        stage('Push to DockerHub') {
+            steps {
+                script {
+                    def pythonVersions = env.PYTHON_VERSIONS_CSV.split(',')
+                    docker.withRegistry('https://index.docker.io/v1/', DOCKERHUB_CREDENTIALS) {
+                        for (version in pythonVersions) {
+                            docker.image("${REPO_NAME}:${version}").push()
+                        }
+                    }
+                }
+            }
+        }
+    }
+    post {
+        always {
+            echo "Pipeline completed."
+        }
+    }
+}
