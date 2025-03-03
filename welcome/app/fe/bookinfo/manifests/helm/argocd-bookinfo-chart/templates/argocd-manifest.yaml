@@ -18,12 +18,29 @@ spec:
     automated:
       prune: true
       selfHeal: true
-    hooks:
-      - type: PreSync
-        command: ["/bin/sh", "-c"]
-        args: ["echo PreSync hook executed"]
-      - type: PostSync
-        command: ["/bin/sh", "-c"]
-        args: ["echo PostSync hook executed"]
+      
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migration-hook
+  annotations:
+    # This annotation ensures this job runs before the application is synced
+    argocd.argoproj.io/hook: PreSync
+    # This specifies the wave order. Lower numbers are run first.
+    argocd.argoproj.io/hook-wave: "0"
+spec:
+  template:
+    spec:
+      containers:
+      - name: migration-container
+        image: my-database-migration-image:v1
+        command:
+          - "/bin/sh"
+          - "-c"
+          - |
+            echo "Running DB migration..."
+            # Add your migration script or commands here
+      restartPolicy: Never
+
 {{- end }}
 
