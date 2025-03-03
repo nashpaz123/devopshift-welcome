@@ -16,7 +16,14 @@ spec:
     namespace: {{ .Values.argoApplication.namespace }}
   syncPolicy:
     automated:
-      prune: {{ .Values.argoApplication.prune }}
-      selfHeal: {{ .Values.argoApplication.selfHeal }}
+      prune: true
+      selfHeal: true
+    hooks:
+      - type: PreSync
+        command: ["/bin/sh", "-c"]
+        args: ["echo PreSync hook executed"]
+      - type: PostSync
+        command: ["/bin/sh", "-c"]
+        args: ["echo PostSync hook executed"]
 {{- end }}
 
