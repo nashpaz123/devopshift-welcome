@@ -30,7 +30,7 @@ metadata:
     argocd.argoproj.io/sync-wave: "1"
 
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: 3
   selector:
     matchLabels:
       app: details
