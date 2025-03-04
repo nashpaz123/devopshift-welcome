@@ -63,7 +63,6 @@ pipeline {
                 """
                 sleep time: 20, unit: 'SECONDS'  // Wait for services to start
                 sh 'docker ps | grep -q 5002 && echo "Port 5002 is mapped and the container is running." || exit 1 '  // Adjust port for backend if needed
-                sh 'docker-compose -f exam-code/docker/docker-compose.yaml down'
             }
         }
         
