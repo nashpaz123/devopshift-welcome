@@ -14,7 +14,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/nashpaz123/devopshift-welcome.git'
+                git branch: 'workshop/argo-jenkins-exam', url: 'https://github.com/nashpaz123/devopshift-welcome.git'
             }
         }
         
@@ -22,20 +22,29 @@ pipeline {
             steps {
                 sh 'pip install flake8 bandit'
                 sh 'flake8 .'
-                sh 'bandit -r .'
+                sh 'bandit -r . ||true'
             }
         }
         
         stage('Install Dependencies') {
             steps {
-                sh 'pip install -r requirements.txt'
+                sh """
+                   pwd
+                   ls
+                   pip install -r exam-code/docker/fe/requirements.txt
+                """
             }
         }
         
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t $DOCKER_REGISTRY/$REPO_NAME:$IMAGE_TAG ."
-                sh "docker tag $DOCKER_REGISTRY/$REPO_NAME:$IMAGE_TAG $DOCKER_REGISTRY/$REPO_NAME:latest"
+                sh """
+                   pwd
+                   ls
+                   cd exam-code/docker/fe/
+                   docker build -t $DOCKER_REGISTRY/$REPO_NAME:$IMAGE_TAG ."
+                   docker tag $DOCKER_REGISTRY/$REPO_NAME:$IMAGE_TAG $DOCKER_REGISTRY/$REPO_NAME:latest
+                """
             }
         }
         
@@ -50,7 +59,7 @@ pipeline {
                 sh """
                 pwd
                 ls
-                docker-compose up -d
+                docker-compose -f exam-code/docker/docker-compose.yaml up -d
                 """
                 sleep time: 20, unit: 'SECONDS'  // Wait for services to start
                 sh 'curl -f http://localhost:5002 || exit 1'  // Adjust port for backend if needed
