@@ -54,8 +54,7 @@ pipeline {
         stage('Integration Test with Docker Compose') {
             steps {
                 sh """
-                pwd
-                ls
+                cp -a exam-code/docker/docker-compose.yaml .
                 docker-compose -f exam-code/docker/docker-compose.yaml up -d
                 """
                 sleep time: 20, unit: 'SECONDS'  // Wait for services to start
